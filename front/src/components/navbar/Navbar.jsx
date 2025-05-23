@@ -34,7 +34,6 @@ const Navbar = () => {
         <h1 className="text-xl lg:text-2xl font-bold lg:ml-12 lg:mr-8">
           <a href="/">XYZ Co</a>
         </h1>
-
         <div className="hidden lg:flex justify-center">
           <ul className="flex gap-8 text-lg">
             {menuItems.map((item) => (
