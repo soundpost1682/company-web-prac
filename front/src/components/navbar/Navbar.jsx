@@ -32,7 +32,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 w-full bg-white text-black p-4 shadow-lg z-50">
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-xl lg:text-2xl font-bold lg:ml-12 lg:mr-8">
-          <a href="/">XYZ Co</a>
+          <a href="/">doremifa Solar System Ltd</a>
         </h1>
         <div className="hidden lg:flex justify-center">
           <ul className="flex gap-8 text-lg">

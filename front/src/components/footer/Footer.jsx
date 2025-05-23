@@ -83,7 +83,7 @@ const Footer = () => {
               <li>Vancouver, BC</li>
               <li>1234 Vancouver Bridge</li>
               <li>T : 987-654-3210</li>
-              <li>Email : XYZco@company.com</li>
+              <li>Email : doremifa@solar.com</li>
             </ul>
           </div>
           <div>
@@ -117,7 +117,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2025 XYZco Ltd. All rights reserved.</p>
+          <p>&copy; 2025 doremifa Solar System Ltd. All rights reserved.</p>
         </div>
       </div>
     </footer>
