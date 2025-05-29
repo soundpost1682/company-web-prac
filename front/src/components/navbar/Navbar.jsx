@@ -6,7 +6,7 @@ const menuItems = [
   { path: "/", label: "Home" },
   { path: "/about", label: "About" },
   { path: "/services", label: "Services" },
-  { path: "/leaders", label: "Leaders" },
+  { path: "/leadership", label: "Leaders" },
   { path: "/board", label: "Board" },
   { path: "/contact", label: "Contact" },
 ];

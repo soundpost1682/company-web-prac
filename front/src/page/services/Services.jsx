@@ -123,7 +123,7 @@ const Services = () => {
           Talk with our specialists to find your solution
         </p>
         <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-300">
-          Free to start
+          Start Now
         </button>
       </div>
     </div>
