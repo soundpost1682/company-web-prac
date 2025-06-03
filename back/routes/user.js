@@ -33,19 +33,21 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "no user found" });
     }
     if (!user.isActive) {
-      return res.status(401).json({ message: "Inactivated account" });
+      return res
+        .status(401)
+        .json({ message: "Inactivated account. Contact CS" });
     }
     if (user.isLoggedIn) {
       return res.status(401).json({ message: "already logged in" });
     }
-    const isValiadPassword = await bcrypt.compare(password, user.password);
-    if (!isValiadPassword) {
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
       user.failedLoginAttempts += 1;
-      user.lastLoginAttemp = new Date();
+      user.lastLoginAttempt = new Date();
       if (user.failedLoginAttempts >= 5) {
         user.isActive = false;
         await user.save();
-        return res.status(404).json({ message: "incorrect PW 5 times" });
+        return res.status(401).json({ message: "incorrect PW 5 times" });
       }
       await user.save();
       return res.status(401).json({
@@ -54,18 +56,18 @@ router.post("/login", async (req, res) => {
       });
     }
     user.failedLoginAttempts = 0;
-    user.lastLoginAttemp = new Date();
+    user.lastLoginAttempt = new Date();
     user.isLoggedIn = true;
 
     try {
       const response = await axios.get("https://api.ipify.org?format=json");
       const ipAddress = response.data.ip;
       user.ipAddress = ipAddress;
-    } catch (error) {
-      console.log("taking Ip address", error.message);
+    } catch (ipError) {
+      console.log("taking Ip address", ipError.message);
     }
     await user.save();
-    
+
     const token = jwt.sign(
       { userId: user._id, username: user.username },
       process.env.JWT_SECRET,
@@ -126,6 +128,23 @@ router.delete("/delete/:userId", async (req, res) => {
     res.json({ message: "User deleted done" });
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.post("/verify-token", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res
+      .status(400)
+      .json({ isValid: false, message: "There is no Token" });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return res.status(200).json({ isValid: true, user: decoded });
+  } catch {
+    return res
+      .status(401)
+      .json({ isValid: false, message: "Not available token" });
   }
 });
 module.exports = router;

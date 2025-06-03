@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    lastLoginAttemp: {
+    lastLoginAttempt: {
       type: Date,
     },
     ipAddress: {

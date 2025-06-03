@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -6,6 +8,37 @@ const AdminLogin = () => {
     password: "",
   });
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    console.log(formData);
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.data.user) {
+        navigate("/admin/posts");
+      }
+    } catch (error) {
+      const errorMessage = error.response.data.message || "Log in failed";
+      const remainingAttempts = error.response.data.remainingAttempts;
+      setError({
+        message: errorMessage,
+        remainingAttempts: remainingAttempts,
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
@@ -18,7 +51,7 @@ const AdminLogin = () => {
             Staff Account
           </p>
         </div>
-        <form className="mt-8 space-y-6">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
               <label
@@ -32,6 +65,8 @@ const AdminLogin = () => {
                 id="username"
                 name="username"
                 required
+                value={formData.username}
+                onChange={handleChange}
                 className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300"
                 placeholder="ID"
               />
@@ -44,10 +79,12 @@ const AdminLogin = () => {
                 admin PW
               </label>
               <input
-                type="text"
+                type="password"
                 id="password"
                 name="password"
                 required
+                value={formData.password}
+                onChange={handleChange}
                 className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300"
                 placeholder="password"
               />
