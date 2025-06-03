@@ -30,7 +30,7 @@ router.post("/login", async (req, res) => {
     const { username, password } = req.body;
     const user = await User.findOne({ username }).select("+password");
     if (!user) {
-      return res.status("404").json({ message: "no user found" });
+      return res.status(401).json({ message: "no user found" });
     }
     if (!user.isActive) {
       return res.status(401).json({ message: "Inactivated account" });
@@ -48,12 +48,10 @@ router.post("/login", async (req, res) => {
         return res.status(404).json({ message: "incorrect PW 5 times" });
       }
       await user.save();
-      return res
-        .status(401)
-        .json({
-          message: "PW incorrect.",
-          remainingAttempts: 5 - user.failedLoginAttempts,
-        });
+      return res.status(401).json({
+        message: "PW incorrect.",
+        remainingAttempts: 5 - user.failedLoginAttempts,
+      });
     }
     user.failedLoginAttempts = 0;
     user.lastLoginAttemp = new Date();
@@ -67,56 +65,67 @@ router.post("/login", async (req, res) => {
       console.log("taking Ip address", error.message);
     }
     await user.save();
-
+    
     const token = jwt.sign(
-      { userID: user._id, username: user.username },
+      { userId: user._id, username: user.username },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
 
-    console.log(token)
+    console.log(token);
 
-    res.cookie('token', token,{
-      httpOnly : true,
-      secure: 'production',
-      sameSite : 'strict',
-      maxAge: 24*60*60*1000
-    })
-    const userWithoutPassword = user.toObject()
-    delete userWithoutPassword.password
-    res.json({user:userWithoutPassword})
-
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+    res.json({ user: userWithoutPassword });
   } catch (error) {
     console.log("server error: ", error.message);
     res.status(500).json({ message: "server error!" });
   }
 });
 
-router.post('/logout', async (req, res)=>{
-  try{
-    const token = req.cookies.token
-    if (!token){
-      return res.status(400).json({message: 'already sign out'})
+router.post("/logout", async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(400).json({ message: "already sign out" });
     }
-    try{
-      const decoded = jwt.verify(token, process.env.JWT_SECRET)
-      const user = await User.findById(decoded.userID)
-      if (user){
-        user.isLoggedIn = false
-        await user.save()
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.userId);
+      if (user) {
+        user.isLoggedIn = false;
+        await user.save();
       }
-    }catch(error){
-      console.log('token verify error : ', error.message)
+    } catch (error) {
+      console.log("token verify error : ", error.message);
     }
-    res.clearCookie('token', {
-      httpOnly : true,
-      secure : false,
-      sameSite: 'strict'
-    })
-    res.json({message : 'logged out done'})
-  }catch(error){
-    console.log('loggout error : ', error.message)
-    res.status(500).json({message : 'server error'})
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+    });
+    res.json({ message: "logged out done" });
+  } catch (error) {
+    console.log("loggout error : ", error.message);
+    res.status(500).json({ message: "server error" });
   }
-})
+});
+
+router.delete("/delete/:userId", async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.userId);
+    if (!user) {
+      return res.status(400).json({ message: "Cannot find the user" });
+    }
+    res.json({ message: "User deleted done" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 module.exports = router;
