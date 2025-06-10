@@ -7,6 +7,8 @@ const app = express();
 const PORT = 3000;
 
 const userRoutes = require('./routes/user')
+const contactRoutes = require('./routes/contact')
+
 app.use(cors({
     origin: "http://localhost:5173",
     credentials: true,
@@ -16,6 +18,7 @@ app.use(express.urlencoded())
 app.use(cookieParser())
 
 app.use('/api/auth', userRoutes)
+app.use('/api/contact', contactRoutes)
 
 
 app.get("/", (req, res) => {
