@@ -1,6 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+    status: "in progress",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/contact",
+        formData
+      );
+      if (response.status === 201) {
+        alert("QA upload success");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+          status: "in progress",
+        });
+      }
+    } catch (error) {
+      console.log("error!", error);
+      alert("error in QA. Please wait and submit again later");
+    }
+  };
   return (
     <div className="min-h-screen bg-white py-32">
       <div className="container mx-auto px-4 max-w-6xl">
@@ -14,7 +51,10 @@ const Contact = () => {
         </div>
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div>
-            <form className="bg-white rounded-2xl shadow-xl p-8">
+            <form
+              className="bg-white rounded-2xl shadow-xl p-8"
+              onSubmit={handleSubmit}
+            >
               <div className="space-y-6">
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">
@@ -22,9 +62,12 @@ const Contact = () => {
                   </label>
                   <input
                     type="text"
+                    name="name"
                     className="w-full p-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors duration-300"
                     placeholder="John Doe"
                     required
+                    value={formData.name}
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
@@ -33,9 +76,12 @@ const Contact = () => {
                   </label>
                   <input
                     type="email"
+                    name="email"
                     className="w-full p-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors duration-300"
                     placeholder="ex@example.com"
                     required
+                    value={formData.email}
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
@@ -44,9 +90,12 @@ const Contact = () => {
                   </label>
                   <input
                     type="tel"
+                    name="phone"
                     className="w-full p-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors duration-300"
                     placeholder="123-456-7890"
                     required
+                    value={formData.phone}
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
@@ -55,9 +104,12 @@ const Contact = () => {
                   </label>
                   <textarea
                     type="text"
+                    name="message"
                     className="w-full p-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors duration-300 h-40"
                     placeholder="Write your story"
                     required
+                    value={formData.message}
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
