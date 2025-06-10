@@ -31,4 +31,27 @@ router.post('/', async (req,res)=>{
   }
 })
 
+router.get('/', authenticateToken, async (req,res)=>{
+  try{
+    const contacts = await Contact.find().sort({createdAt:-1})
+    res.json(contacts)
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message:'error!'})
+  }
+})
+
+router.get('/:id', authenticateToken, async (req,res)=>{
+  try{
+    const contact = await Contact.findById(req.params.id)
+    if(!contact){
+      return res.status(404).json({message:'cannot find QA'})
+    }
+    res.json(contact)
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message:'error!'})
+  }
+})
+
 module.exports = router
